@@ -27,10 +27,8 @@ export default function Home() {
           <button type="submit" className="bg-blue-500 text-white p-2">search</button>
         </form>
 
-        {/* 错误处理：要求 3 */}
         {error && <p className="text-red-500 font-bold">{error}</p>}
 
-        {/* 数据展示：要求 2 */}
         {data && (
             <div className="mt-4 border p-4">
               <pre>{JSON.stringify(data, null, 2)}</pre>

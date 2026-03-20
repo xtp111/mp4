@@ -140,7 +140,7 @@ export default function Home() {
         )}
 
         <Footer>
-          <StyledLink href="/about/secondPage">
+          <StyledLink href="/about">
             About this project →
           </StyledLink>
         </Footer>

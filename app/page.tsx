@@ -83,14 +83,7 @@ const ErrorText = styled.p`
   font-weight: 500;
 `;
 
-const ResultList = styled.div`
-  margin-top: 1rem;
-`;
 
-const ResultItem = styled.div`
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #e5e7eb;
-`;
 
 const Footer = styled.div`
   margin-top: 2rem;
@@ -107,14 +100,106 @@ const StyledLink = styled(Link)`
   }
 `;
 
+interface ArtRecord {
+  id?: number;
+  title?: string;
+  artistname?: string;
+  dated?: string;
+  medium?: string;
+  dimensions?: string;
+  classification?: string;
+  primaryimageurl?: string;
+  url?: string;
+}
+
+const ResultList = styled.div`
+  margin-top: 1.5rem;
+`;
+
+const ResultItem = styled.div`
+  padding: 1rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+`;
+
+const Thumbnail = styled.img`
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  background-color: #f3f4f6;
+  flex-shrink: 0;
+`;
+
+const Content = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const ItemTitle = styled.h3`
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.4;
+`;
+
+const ItemMeta = styled.p`
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.4;
+`;
+
+const ItemDetails = styled.p`
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.4;
+`;
+
+const NoImage = styled.div`
+  width: 80px;
+  height: 80px;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+`;
+
 function ResultsList({ records }: { records: unknown[] }) {
   return (
     <ResultList>
-      {records.map((record: unknown, index) => (
-        <ResultItem key={index}>
-          {JSON.stringify(record)}
-        </ResultItem>
-      ))}
+      {records.map((record, index) => {
+        const art = record as ArtRecord;
+        return (
+          <ResultItem key={art.id || index}>
+            {art.primaryimageurl ? (
+              <Thumbnail src={art.primaryimageurl} alt={art.title || ''} />
+            ) : (
+              <NoImage>无图片</NoImage>
+            )}
+            <Content>
+              <ItemTitle>{art.title || '未命名作品'}</ItemTitle>
+              <ItemMeta>
+                {art.artistname || '未知艺术家'}
+                {art.dated && ` · ${art.dated}`}
+              </ItemMeta>
+              {(art.medium || art.classification) && (
+                <ItemDetails>
+                  {art.classification}
+                  {art.classification && art.medium && ' · '}
+                  {art.medium}
+                </ItemDetails>
+              )}
+            </Content>
+          </ResultItem>
+        );
+      })}
     </ResultList>
   );
 }

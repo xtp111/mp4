@@ -4,8 +4,24 @@ import { fetchData } from "./action";
 import Link from "next/link";
 import styled from "styled-components";
 
+interface ApiInfo {
+  totalrecordsperquery: number;
+  totalrecords: number;
+  pages: number;
+  page: number;
+  next: string;
+  prev: string;
+  responsetime: string;
+}
+
+interface ApiResponse {
+  info: ApiInfo;
+  records: unknown[];
+  aggregations: Record<string, unknown>;
+}
+
 const Main = styled.main`
-  max-width: 42rem;
+  max-width: 48rem;
   margin: 0 auto;
   padding: 2rem;
 `;
@@ -67,18 +83,13 @@ const ErrorText = styled.p`
   font-weight: 500;
 `;
 
-const DataBox = styled.div`
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  padding: 1rem;
+const ResultList = styled.div`
+  margin-top: 1rem;
 `;
 
-const Pre = styled.pre`
-  font-size: 0.875rem;
-  color: #374151;
-  overflow: auto;
-  max-height: 24rem;
+const ResultItem = styled.div`
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
 `;
 
 const Footer = styled.div`
@@ -96,8 +107,20 @@ const StyledLink = styled(Link)`
   }
 `;
 
+function ResultsList({ records }: { records: unknown[] }) {
+  return (
+    <ResultList>
+      {records.map((record: unknown, index) => (
+        <ResultItem key={index}>
+          {JSON.stringify(record)}
+        </ResultItem>
+      ))}
+    </ResultList>
+  );
+}
+
 export default function Home() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<ApiResponse | null>(null);
   const [error, setError] = useState("");
 
   const handleSearch = async (formData: FormData) => {
@@ -106,7 +129,7 @@ export default function Home() {
 
     try {
       const result = await fetchData(query);
-      setData(result);
+      setData(result as ApiResponse);
     } catch (err) {
       setError("Failed to fetch data from API");
     }
@@ -133,11 +156,7 @@ export default function Home() {
             </ErrorBox>
         )}
 
-        {data && (
-            <DataBox>
-              <Pre>{JSON.stringify(data, null, 2)}</Pre>
-            </DataBox>
-        )}
+        {data && <ResultsList records={data.records} />}
 
         <Footer>
           <StyledLink href="/about">
